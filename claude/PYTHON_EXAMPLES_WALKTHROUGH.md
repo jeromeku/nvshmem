@@ -793,7 +793,7 @@ Python User Code:
                         │
                         └─> Uses nvshmem_int_put() (device RMA)
                              │
-                             └─> See CPP_EXAMPLES_WALKTHROUGH.md
+                             └─> See [CPP_EXAMPLES_WALKTHROUGH.md](CPP_EXAMPLES_WALKTHROUGH.md)
                                   for device RMA call stack
 ```
 
@@ -1500,12 +1500,12 @@ nvshmem.core.finalize()
 
 For C++ examples and architecture details, see:
 
-- **C++ Examples**: [CPP_EXAMPLES_WALKTHROUGH.md](./CPP_EXAMPLES_WALKTHROUGH.md)
-- **System Architecture**: [ARCHITECTURE.md](./ARCHITECTURE.md)
+- **C++ Examples**: [CPP_EXAMPLES_WALKTHROUGH.md](CPP_EXAMPLES_WALKTHROUGH.md)
+- **System Architecture**: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 For detailed component explanations:
 
-- **Memory Management**: [ARCHITECTURE.md § Memory Management](./ARCHITECTURE.md#2-memory-management)
-- **Collective Operations**: [ARCHITECTURE.md § Collective Operations](./ARCHITECTURE.md#4-collective-operations)
-- **Transport Layer**: [ARCHITECTURE.md § Transport Layer](./ARCHITECTURE.md#6-transport-layer)
-- **Python Bridge**: [ARCHITECTURE.md § Python-Specific Architecture](./ARCHITECTURE.md#python-specific-architecture)
+- **Memory Management**: [ARCHITECTURE.md § Memory Management](ARCHITECTURE.md#2-memory-management)
+- **Collective Operations**: [ARCHITECTURE.md § Collective Operations](ARCHITECTURE.md#4-collective-operations)
+- **Transport Layer**: [ARCHITECTURE.md § Transport Layer](ARCHITECTURE.md#6-transport-layer)
+- **Python Bridge**: [ARCHITECTURE.md § Python-Specific Architecture](ARCHITECTURE.md#python-specific-architecture)

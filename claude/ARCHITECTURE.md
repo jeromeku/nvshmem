@@ -1535,8 +1535,8 @@ def my_kernel(data, dest_pe):
 
 This document provides a comprehensive overview of NVSHMEM's architecture. For detailed call traces and annotated examples, see:
 
-- [C++ Examples Walkthrough](./CPP_EXAMPLES_WALKTHROUGH.md)
-- [Python Examples Walkthrough](./PYTHON_EXAMPLES_WALKTHROUGH.md)
+- [C++ Examples Walkthrough](CPP_EXAMPLES_WALKTHROUGH.md)
+- [Python Examples Walkthrough](PYTHON_EXAMPLES_WALKTHROUGH.md)
 
 ### Key Takeaways
 

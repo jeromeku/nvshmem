@@ -1546,15 +1546,15 @@ nvshmem_finalize();  // Shutdown transports, free resources
 
 For detailed explanations of the components referenced in these examples, see:
 
-- **Initialization**: [Architecture.md § Core Subsystems → Initialization](./ARCHITECTURE.md#1-initialization--bootstrap)
-- **Memory Management**: [Architecture.md § Core Subsystems → Memory Management](./ARCHITECTURE.md#2-memory-management)
-- **RMA Operations**: [Architecture.md § Core Subsystems → Communication Operations](./ARCHITECTURE.md#3-communication-operations)
-- **Collective Operations**: [Architecture.md § Core Subsystems → Collective Operations](./ARCHITECTURE.md#4-collective-operations)
-- **Synchronization**: [Architecture.md § Multi-Device Synchronization](./ARCHITECTURE.md#multi-device-synchronization)
-- **Transport Layer**: [Architecture.md § Core Subsystems → Transport Layer](./ARCHITECTURE.md#6-transport-layer)
+- **Initialization**: [Architecture.md § Core Subsystems → Initialization](ARCHITECTURE.md#1-initialization--bootstrap)
+- **Memory Management**: [Architecture.md § Core Subsystems → Memory Management](ARCHITECTURE.md#2-memory-management)
+- **RMA Operations**: [Architecture.md § Core Subsystems → Communication Operations](ARCHITECTURE.md#3-communication-operations)
+- **Collective Operations**: [Architecture.md § Core Subsystems → Collective Operations](ARCHITECTURE.md#4-collective-operations)
+- **Synchronization**: [Architecture.md § Multi-Device Synchronization](ARCHITECTURE.md#multi-device-synchronization)
+- **Transport Layer**: [Architecture.md § Core Subsystems → Transport Layer](ARCHITECTURE.md#6-transport-layer)
 
 ---
 
 ## Next Steps
 
-For Python examples, see [PYTHON_EXAMPLES_WALKTHROUGH.md](./PYTHON_EXAMPLES_WALKTHROUGH.md).
+For Python examples, see [PYTHON_EXAMPLES_WALKTHROUGH.md](PYTHON_EXAMPLES_WALKTHROUGH.md).
