@@ -44,40 +44,39 @@ Architecture Layers
 
 Key Components (code map)
 - Public headers
-  - C++ umbrella headers: `src/include/nvshmem.h:14`, `src/include/nvshmemx.h:16`
-  - Host API declarations: `src/include/host/nvshmem_api.h:14`, `src/include/host/nvshmemx_api.h:20`
-  - Device API inlines: `src/include/device/nvshmem_defines.h:17`
+  - C++ umbrella headers: [nvshmem.h:14](src/include/nvshmem.h#L14), [nvshmemx.h:16](src/include/nvshmemx.h#L16)
+  - Host API declarations: [nvshmem_api.h:14](src/include/host/nvshmem_api.h#L14), [nvshmemx_api.h:20](src/include/host/nvshmemx_api.h#L20)
+  - Device API inlines: [nvshmem_defines.h:17](src/include/device/nvshmem_defines.h#L17)
 - Initialization & state
-  - Device+host shared types/state: `src/include/device_host/nvshmem_types.h:1`
-  - Host state and transports: `src/include/internal/host/nvshmemi_types.h:29`
-  - Host init/main flow: `src/host/init/init.cu:994` (nvshmemi_common_init)
-  - Device init entry: `src/device/init/init_device.cu:139` (nvshmemi_init_thread)
+  - Device+host shared types/state: [nvshmem_types.h:1](src/include/device_host/nvshmem_types.h#L1)
+  - Host state and transports: [nvshmemi_types.h:29](src/include/internal/host/nvshmemi_types.h#L29)
+  - Host init/main flow: [init.cu:994](src/host/init/init.cu#L994) (nvshmemi_common_init)
+  - Device init entry: [init_device.cu:139](src/device/init/init_device.cu#L139) (nvshmemi_init_thread)
 - RMA/Sync on host
-  - Put/Get host entry: `src/host/comm/putget.cpp:364` (nvshmem_putmem, typed wrappers nearby)
-  - Signal/wait and quiet: `src/host/comm/sync.cpp:60`, `src/host/comm/quiet.cpp:80`
+  - Put/Get host entry: [putget.cpp:364](src/host/comm/putget.cpp#L364)
+  - Signal/wait and quiet: [sync.cpp:60](src/host/comm/sync.cpp#L60), [quiet.cpp:80](src/host/comm/quiet.cpp#L80)
 - On‑stream GPU entry (host‑launched kernels)
-  - RMA entrypoints: `src/host/comm/rma.cu:11` → kernels `src/include/internal/non_abi/nvshmemi_h_to_d_rma_defs.cuh:44`
-  - Barrier/sync kernels: `src/host/stream/coll/barrier/barrier.cu:13` → kernels `src/include/internal/non_abi/nvshmemi_h_to_d_coll_defs.cuh:44`
+  - RMA entrypoints: [rma.cu:11](src/host/comm/rma.cu#L11) → [nvshmemi_h_to_d_rma_defs.cuh:44](src/include/internal/non_abi/nvshmemi_h_to_d_rma_defs.cuh#L44)
+  - Barrier/sync kernels: [barrier.cu:13](src/host/stream/coll/barrier/barrier.cu#L13) → [nvshmemi_h_to_d_coll_defs.cuh:44](src/include/internal/non_abi/nvshmemi_h_to_d_coll_defs.cuh#L44)
 - Device transfer paths
-  - Device API inlines → transfer templates: `src/include/device/nvshmem_defines.h:81`, `src/include/non_abi/device/pt-to-pt/transfer_device.cuh.in:104`
-  - GPU proxy channel (device→host handoff): `src/include/non_abi/device/pt-to-pt/proxy_device.cuh:1`
+  - Device inlines → transfer templates: [nvshmem_defines.h:81](src/include/device/nvshmem_defines.h#L81), [transfer_device.cuh.in:104](src/include/non_abi/device/pt-to-pt/transfer_device.cuh.in#L104)
+  - GPU proxy channel: [proxy_device.cuh:1](src/include/non_abi/device/pt-to-pt/proxy_device.cuh#L1)
 - Transports
-  - Transport interfaces: `src/include/internal/host_transport/transport.h:119`
-  - Libfabric implementation: `src/modules/transport/libfabric/libfabric.cpp:740`
+  - Transport interfaces: [transport.h:119](src/include/internal/host_transport/transport.h#L119)
+  - Libfabric implementation: [libfabric.cpp:740](src/modules/transport/libfabric/libfabric.cpp#L740)
 - Python
-  - High‑level APIs: `nvshmem4py/nvshmem/core/*.py`
-  - Cython bindings: `nvshmem4py/nvshmem/bindings/nvshmem.pyx:1397` (hostlib_init_attr), `nvshmem4py/nvshmem/bindings/cynvshmem.pyx:1`
+  - High‑level APIs: nvshmem4py/nvshmem/core/*.py
+  - Cython bindings: [nvshmem.pyx:1397](nvshmem4py/nvshmem/bindings/nvshmem.pyx#L1397), [cynvshmem.pyx:1](nvshmem4py/nvshmem/bindings/cynvshmem.pyx#L1)
 
 Initialization & Symmetric Heap
 
 - C++ host apps call `nvshmem_init()` which wraps `nvshmemi_init_thread()`:
-  - `src/include/host/nvshmem_api.h:52` (nvshmem_init)
-  - `src/device/init/init_device.cu:139` (nvshmemi_init_thread)
-    - Calls `nvshmemid_hostlib_init_attr(...)` to bootstrap host runtime and register device state callbacks:
-      `src/host/init/init.cu:1220`
-    - If fully initialized, sets up device‑only state (`_nvshmemi_init_device_only_state`), resolves CUDA device
+  - [nvshmem_api.h:52](src/include/host/nvshmem_api.h#L52) (nvshmem_init)
+  - [init_device.cu:139](src/device/init/init_device.cu#L139) (nvshmemi_init_thread)
+    - Calls hostlib init to bootstrap and register device state callbacks: [init.cu:1220](src/host/init/init.cu#L1220)
+    - If fully initialized, sets up device‑only state and resolves CUDA device
   - Host library bootstrap resolves environment and bootstrap method (MPI/UID):
-    - `src/host/init/init.cu:1302` (nvshmemx_hostlib_init_attr)
+    - [init.cu:1302](src/host/init/init.cu#L1302) (nvshmemx_hostlib_init_attr)
     - `src/host/init/init.cu:994` (nvshmemi_common_init) → builds transport map, sets up connections, symmetric heap, teams, and proxy.
     - Symmetric heap allocation backend lives in `src/host/mem/mem_heap.cpp` (heap classes, VMM/egm paths). Public API:
       - `src/host/mem/mem_heap.cpp:2288` (nvshmem_malloc) calls `nvshmemi_check_state_and_init()` then allocates from heap and performs barrier‑all.
@@ -99,35 +98,35 @@ Two major host‑side paths exist for put/get:
 - Intra‑node mapped heap (peer mapped): fast path uses cudaMemcpyAsync on internal streams:
   - `src/host/comm/putget.cpp:200` (nvshmemi_p2p_rma_optimized)
 - Registered path (unmapped/remote): also uses cudaMemcpyAsync for staged copies, then optional signal op:
-  - `src/host/comm/putget.cpp:120` (nvshmemi_p2p_rma_registered)
+  - [putget.cpp:120](src/host/comm/putget.cpp#L120) (nvshmemi_p2p_rma_registered)
 - Direct transport call for single‑word `P` and chunked multi‑send for bulk:
-  - `src/include/internal/host/nvshmem_internal.h:168` (nvshmemi_process_multisend_rma)
-  - `src/include/internal/host_transport/transport.h:119` (rma signature)
-  - Libfabric RMA implementation: `src/modules/transport/libfabric/libfabric.cpp:740`
+  - [nvshmem_internal.h:168](src/include/internal/host/nvshmem_internal.h#L168) (nvshmemi_process_multisend_rma)
+  - [transport.h:119](src/include/internal/host_transport/transport.h#L119) (RMA signature)
+  - Libfabric RMA implementation: [libfabric.cpp:740](src/modules/transport/libfabric/libfabric.cpp#L740)
 
 2) On‑stream host path (GPU executes the transfer)
 - Host composes device kernel args and launches a tiny proxy kernel on the user stream:
-  - `src/host/comm/rma.cu:11` (nvshmemi_proxy_rma_launcher)
-  - `src/include/internal/non_abi/nvshmemi_h_to_d_rma_defs.cuh:44` (nvshmemi_proxy_rma_entrypoint[_blocking])
+  - [rma.cu:11](src/host/comm/rma.cu#L11) (nvshmemi_proxy_rma_launcher)
+  - [nvshmemi_h_to_d_rma_defs.cuh:44](src/include/internal/non_abi/nvshmemi_h_to_d_rma_defs.cuh#L44) (proxy entrypoints)
 - Those kernels call device transfer templates, which pick between IBGDA (GPU‑NIC) or GPU→Host proxy channel:
-  - `src/include/non_abi/device/pt-to-pt/transfer_device.cuh.in:104` (nvshmemi_transfer_rma<>)
-  - GPU proxy channel details: `src/include/non_abi/device/pt-to-pt/proxy_device.cuh:198` (copy_to_channel, transfer_dma, quiet, fences)
+  - [transfer_device.cuh.in:104](src/include/non_abi/device/pt-to-pt/transfer_device.cuh.in#L104) (nvshmemi_transfer_rma<>)
+  - Proxy channel details: [proxy_device.cuh:198](src/include/non_abi/device/pt-to-pt/proxy_device.cuh#L198)
 
 RMA & Signals (Representative APIs)
 - Typed/size‑generic host puts call the same helper:
-  - `src/host/comm/putget.cpp:364` (nvshmem_putmem)
-  - `src/host/comm/putget.cpp:375` (nvshmemx_putmem_on_stream)
-  - `src/host/comm/putget.cpp:511` (nvshmemx_putmem_signal_on_stream)
+  - [putget.cpp:364](src/host/comm/putget.cpp#L364) (nvshmem_putmem)
+  - [putget.cpp:375](src/host/comm/putget.cpp#L375) (nvshmemx_putmem_on_stream)
+  - [putget.cpp:511](src/host/comm/putget.cpp#L511) (nvshmemx_putmem_signal_on_stream)
 - Device API inlines expand to transfer templates and signal ops:
-  - `src/include/device/nvshmem_defines.h:81` (nvshmem_TYPENAME_p)
-  - `src/include/device/nvshmem_defines.h:107` (nvshmem_TYPENAME_put_signal)
+  - [nvshmem_defines.h:81](src/include/device/nvshmem_defines.h#L81) (nvshmem_TYPENAME_p)
+  - [nvshmem_defines.h:107](src/include/device/nvshmem_defines.h#L107) (nvshmem_TYPENAME_put_signal)
 
 Transports (Host)
 
 - Selection and posting
   - The helper selects `nvshmemi_state->selected_transport_for_rma[pe]` and obtains memory handles for local/remote symmetric memory or registered buffers:
-    - `src/include/internal/host/nvshmem_internal.h:130` (nvshmemi_get_local_mem_handle)
-    - `src/include/internal/host/nvshmem_internal.h:152` (nvshmemi_get_remote_mem_handle)
+    - [nvshmem_internal.h:130](src/include/internal/host/nvshmem_internal.h#L130) (get_local_mem_handle)
+    - [nvshmem_internal.h:152](src/include/internal/host/nvshmem_internal.h#L152) (get_remote_mem_handle)
 - Libfabric path (example)
   - `src/modules/transport/libfabric/libfabric.cpp:740` (nvshmemt_libfabric_rma)
   - Handles P (single element), PUT/GET, and optionally write‑with‑immediate for signaling.
@@ -183,22 +182,23 @@ Python Stack (nvshmem4py)
 Host vs Device End‑to‑End: Annotated Call Examples
 
 1) Host‑initiated put with signal on a CUDA stream
-- User (C++) calls `nvshmemx_putmem_signal_on_stream`:
-  - `src/host/comm/putget.cpp:511` → nvshmemi_prepare_and_post_rma `src/host/comm/putget.cpp:232`
-  - If peer is directly mapped (same NVSwitch domain), cudaMemcpyAsync + `nvshmemi_signal_op_on_stream` (`src/host/comm/sync.cpp:102`).
-  - Else offloads to device proxy kernel: `src/host/comm/rma.cu:11` → `src/include/internal/non_abi/nvshmemi_h_to_d_rma_defs.cuh:75` (signal entrypoint)
-  - Device template executes put and signal: `src/include/non_abi/device/pt-to-pt/transfer_device.cuh.in:137` (nvshmemi_transfer_put_signal)
-  - Transport work performed by IBGDA or by writing GPU→Host proxy channel entries `src/include/non_abi/device/pt-to-pt/proxy_device.cuh:206`.
+- User (C++) calls nvshmemx_putmem_signal_on_stream:
+  - [putget.cpp:511](src/host/comm/putget.cpp#L511) → helper [putget.cpp:232](src/host/comm/putget.cpp#L232)
+  - Mapped peer → `cudaMemcpyAsync` + on‑stream signal: [sync.cpp:102](src/host/comm/sync.cpp#L102)
+  - Remote peer → device proxy kernel: [rma.cu:11](src/host/comm/rma.cu#L11) → [nvshmemi_h_to_d_rma_defs.cuh:75](src/include/internal/non_abi/nvshmemi_h_to_d_rma_defs.cuh#L75)
+  - Device template executes put+signal: [transfer_device.cuh.in:137](src/include/non_abi/device/pt-to-pt/transfer_device.cuh.in#L137)
+  - IBGDA/GPU→Host proxy channel do the actual movement: [proxy_device.cuh:206](src/include/non_abi/device/pt-to-pt/proxy_device.cuh#L206)
 
-2) Device‑initiated `nvshmem_float_put` in a kernel
-- Device API inline: `src/include/device/nvshmem_defines.h:98` → `nvshmemi_put<T,SCOPE>` template (included through transfer headers)
-- Template selects IBGDA or proxy channel path: `src/include/non_abi/device/pt-to-pt/transfer_device.cuh.in:104`
-  - Proxy writes requests into ring‑buffer (channel) consumed by host proxy thread: `src/include/non_abi/device/pt-to-pt/proxy_device.cuh:206`
+2) Device‑initiated nvshmem_float_put in a kernel
+- Device inline: [nvshmem_defines.h:98](src/include/device/nvshmem_defines.h#L98) → `nvshmemi_put<T,SCOPE>`
+- IBGDA vs proxy channel: [transfer_device.cuh.in:104](src/include/non_abi/device/pt-to-pt/transfer_device.cuh.in#L104)
+  - Proxy encodes and queues requests: [proxy_device.cuh:206](src/include/non_abi/device/pt-to-pt/proxy_device.cuh#L206)
 
-3) Python `nvshmem.core.reduce(..., stream=...)`
-- Core wrapper locates dtype/op and resolves binding function name:
-  - `nvshmem4py/nvshmem/core/collective.py:110` → `collective_on_buffer` → `bindings.<dtype>_<op>_reduce_on_stream`
-- Cython binding calls C++ host API inlined in headers, implemented in `src/host/coll/*` and on‑stream kernels in `src/include/internal/non_abi/nvshmemi_h_to_d_coll_defs.cuh:44`.
+3) Python nvshmem.core.reduce(..., stream=...)
+- High‑level resolves dtype/op then calls binding:
+  - [collective.py:110](nvshmem4py/nvshmem/core/collective.py#L110) → `bindings.<dtype>_<op>_reduce_on_stream`
+- Host launches device collective kernel:
+  - [nvshmemi_h_to_d_coll_defs.cuh:44](src/include/internal/non_abi/nvshmemi_h_to_d_coll_defs.cuh#L44)
 
 Bootstrap & Finalization (C++ and Python)
 - C++ app
@@ -236,4 +236,3 @@ Troubleshooting Pointers
 - Undefined behavior when calling APIs before init: guarded by `nvshmemi_check_state_and_init()` `src/host/init/init.cu:1195`
 - On‑stream ops on remote transports require proxy kernels; missing transport or unsupported combos trigger explicit errors in `nvshmemi_prepare_and_post_rma` `src/host/comm/putget.cpp:232`
 - Version checks between host/device libs: `src/host/init/init.cu:1226`
-
