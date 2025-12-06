@@ -1,0 +1,55 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# HYDRA_SCRIPT=./scripts/install_hydra.sh
+
+# chmod +x ${HYDRA_SCRIPT}
+# mkdir -p hydra
+# DOWNLOAD_DIR=`pwd`/hydra/src
+# INSTALL_DIR=`pwd`/hydra/install
+
+# ${HYDRA_SCRIPT} ${DOWNLOAD_DIR} ${INSTALL_DIR}
+
+# export CUDA_HOME=/home/jeromeku/cuda-toolkit
+# CMAKE_CUDA_COMPILER=${CUDA_HOME}/bin/nvcc
+CMAKE_CUDA_COMPILER=""
+CMAKE_CUDA_ARCHITECTURES=90-real
+PYTHON_EXECUTABLE=/home/jeromeku/cutlass/.venv/bin/python
+export NVSHMEM_BUILD_PYTHON_LIB=ON
+export NVSHMEM_USE_NCCL=OFF
+export NVSHMEM_USE_GDRCOPY=OFF
+export NVSHMEM_IBGDA_SUPPORT=OFF
+export NVSHMEM_IBRC_SUPPORT=OFF
+export NVSHMEM_BUILD_EXAMPLES=ON
+export NVSHMEM_BUILD_TESTS=ON
+# export NVSHMEM_PMIX_SUPPORT=ON
+# export NVSHMEM_DEVEL=ON
+export NVSHMEM_DEBUG=ON
+export NVSHMEM_TRACE=ON
+export NVSHMEM_ENV_ALL=ON
+export NVSHMEM_MPI_SUPPORT=OFF
+# export NVSHMEM_BOOTSTRAP=PMI
+
+# export NVSHMEM_BUILD_BITCODE_LIBRARY=ON
+DEBUG_FLAGS="-g3 -O0"
+USE_DEBUG=1
+
+BUILD_CMD=(
+  cmake -Bbuild -S. -GNinja
+  -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+  "-DPython3_EXECUTABLE=${PYTHON_EXECUTABLE}"
+  "-DCMAKE_CUDA_ARCHITECTURES=${CMAKE_CUDA_ARCHITECTURES}"
+)
+
+# Example: conditionally append extra flags
+if [[ ${USE_DEBUG:-0} == 1 ]]; then
+  BUILD_CMD+=("-DCMAKE_C_FLAGS=${DEBUG_FLAGS}" "-DCMAKE_CXX_FLAGS=${DEBUG_FLAGS}")
+fi
+
+if [[ -n ${CMAKE_CUDA_COMPILER} ]]; then
+  BUILD_CMD+=(""-DCMAKE_CUDA_COMPILER=${CMAKE_CUDA_COMPILER}"")
+fi
+
+echo "${BUILD_CMD[@]}"
+"${BUILD_CMD[@]}" 2>&1 | tee _build.log
