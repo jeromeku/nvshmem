@@ -57,6 +57,10 @@ ext_modules = [e for ext in ext_modules for e in calculate_modules(ext)]
 
 
 compiler_directives = {"embedsignature": True, "show_performance_hints": False}
+requirements = open(f"{os.path.dirname(__file__)}/requirements.txt").read().splitlines()
+print(f"Requirements: {requirements}")
+cuda_home = os.environ.get("CUDA_HOME", "/usr/local/cuda")
+cuda_include = os.path.join(cuda_home, "include")
 
 setup(
     name=PACKAGE_NAME,
@@ -64,6 +68,7 @@ setup(
     zip_safe=False,
     packages=find_packages(include=["nvshmem", "nvshmem.*"]),
     include_package_data=True,
+    include_dirs=[cuda_include],
     options={"build_ext": {"inplace": True}},
-    install_requires=open(f"{os.path.dirname(__file__)}/requirements.txt").read().splitlines()
+    install_requires=requirements
 )

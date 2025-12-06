@@ -21,6 +21,8 @@ def torchrun_uid_init():
     """
     # Set Torch device
     local_rank = int(os.environ['LOCAL_RANK'])
+    world_size = int(os.environ['WORLD_SIZE'])
+
     torch.cuda.set_device(local_rank)
     device = torch.device("cuda", local_rank)
 
@@ -31,9 +33,10 @@ def torchrun_uid_init():
     global stream
     # Get PyTorch's current stream
     stream = nvshmem.core.NvshmemStream(torch.cuda.current_stream())
-
+    print(f"rank {local_rank} initializing process group")
     # Initialize torch.distributed process group
-    world_size = torch.cuda.device_count()
+    print(f"{world_size} PEs expected")
+
     dist.init_process_group(
         backend="cpu:gloo,cuda:nccl",
         rank=local_rank,
@@ -44,6 +47,7 @@ def torchrun_uid_init():
     # Extract rank, nranks from process group
     num_ranks = dist.get_world_size()
     rank_id = dist.get_rank()
+    print(f"rank {local_rank} of {num_ranks} initialized")
 
     # Create an empty uniqueid for all ranks
     uniqueid = nvshmem.core.get_unique_id(empty=True)
@@ -53,6 +57,8 @@ def torchrun_uid_init():
         broadcast_objects = [uniqueid]
     else:
         broadcast_objects = [None]
+
+    print(f"rank {local_rank} of {num_ranks} broadcasting uid {uniqueid}")
 
     # We use torch.distributed.broadcast_object_list to send the UID to all ranks
     dist.broadcast_object_list(broadcast_objects, src=0)
